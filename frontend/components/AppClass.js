@@ -31,7 +31,7 @@ export default class AppClass extends React.Component {
 
 
     const initialState = {
-      message: '(2,2)',
+      message: '',
       email: '',
       index: 4,
       steps: 0,
@@ -135,22 +135,30 @@ export default class AppClass extends React.Component {
     })
   }
 
-  onSubmit = (evt) => {
+  onSubmit = (event) => {
     // Use a POST request to send a payload to the server.
-    evt.preventDefault()
+    event.preventDefault()
     const motherLoad = {
       "x": this.getXY(this.state.grid)[0],
       "y": this.getXY(this.state.grid)[1],
       "steps": this.state.steps,
       "email": this.state.email
     }
+    // axios.post('http://localhost:9000/api/result', motherLoad)
+    //   .then(response => {
+    //     console.log(response.data);
+    //   }).catch(error => {
+    //     console.error(error);
+    //   });
     axios.post('http://localhost:9000/api/result', motherLoad)
       .then(response => {
-        console.log(response.data);
+        this.setState({ ...this.state, message: response.data.message });
+        console.log(this.state.message)
       }).catch(error => {
         console.error(error);
       });
   }
+
 
 
   render() {
@@ -173,7 +181,7 @@ export default class AppClass extends React.Component {
           }
         </div>
         <div className="info">
-          <h3 id="message">{ }</h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
           <button id="left" onClick={() => { this.getNextIndex('left') }}>LEFT</button>
