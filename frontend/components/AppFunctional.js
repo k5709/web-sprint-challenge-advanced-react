@@ -2,18 +2,6 @@ import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
 
-// // Suggested initial states
-// const initialMessage = ''
-// const initialEmail = ''
-// const initialSteps = 0
-// const initialIndex = 4 // the index the "B" is at
-
-// const initialState = {
-//   message: initialMessage,
-//   email: initialEmail,
-//   index: initialIndex,
-//   steps: initialSteps,
-// }
 export default function AppFunctional(props) {
 
   const initialGrid = [
@@ -64,7 +52,7 @@ export default function AppFunctional(props) {
     }
   }
 
-  function reset() {
+  function reset(email) {
     setEmail(''), setIndex(4), setMessage(''), setSteps(0)
   }
 
@@ -91,7 +79,6 @@ export default function AppFunctional(props) {
 
 
   function onSubmit(event) {
-    // Use a POST request to send a payload to the server.
     event.preventDefault()
     const motherLoad = {
       "x": getXY(grid)[0],
@@ -106,7 +93,7 @@ export default function AppFunctional(props) {
       }).catch(error => {
         setMessage(error.response.data.message);
       });
-    reset()
+    setEmail('')
   }
 
   return (
@@ -128,14 +115,14 @@ export default function AppFunctional(props) {
         <h3 id="message" value={message}>{message}</h3>
       </div>
       <div id="keypad">
-        <button id="left" onClick={() => { getNextIndex('left') }}>LEFT</button>
-        <button id="up" onClick={() => { getNextIndex('up') }}>UP</button>
-        <button id="right" onClick={() => { getNextIndex('right') }}>RIGHT</button>
-        <button id="down" onClick={() => { getNextIndex('down') }}>DOWN</button>
-        <button id="reset" onClick={reset}>reset</button>
+        <button data-testid='left' id="left" onClick={() => { getNextIndex('left') }}>LEFT</button>
+        <button data-testid='up' id="up" onClick={() => { getNextIndex('up') }}>UP</button>
+        <button data-testid='right' id="right" onClick={() => { getNextIndex('right') }}>RIGHT</button>
+        <button data-testid='down' id="down" onClick={() => { getNextIndex('down') }}>DOWN</button>
+        <button data-testid='reset' id="reset" onClick={reset}>reset</button>
       </div>
       <form>
-        <input onChange={onChange} value={email} id="email" type="email" placeholder="type email"></input>
+        <input data-testid="email" onChange={onChange} value={email} id="email" type="email" placeholder="type email"></input>
         <input id="submit" type="submit" onClick={onSubmit}></input>
       </form>
     </div >
