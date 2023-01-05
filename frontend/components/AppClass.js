@@ -1,13 +1,11 @@
 import React from 'react'
 import axios from 'axios'
-import { useState } from 'react';
-
 
 // Suggested initial states
 const initialMessage = ''
 const initialEmail = ''
 const initialSteps = 0
-const initialIndex = 4 // the index the "B" is at
+const initialIndex = 4
 
 const initialState = {
   message: initialMessage,
@@ -17,8 +15,6 @@ const initialState = {
 }
 
 export default class AppClass extends React.Component {
-  // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
-  // You can delete them and build your own logic from scratch.
   constructor() {
     console.log('constructor ran')
     super()
@@ -28,7 +24,6 @@ export default class AppClass extends React.Component {
       [1, 2], [2, 2], [3, 2],
       [1, 3], [2, 3], [3, 3]
     ]
-
 
     const initialState = {
       message: '',
@@ -41,51 +36,39 @@ export default class AppClass extends React.Component {
   }
 
   getXY = (grid) => {
-    // It it not necessary to have a state to track the coordinates.
-    // It's enough to know what index the "B" is at, to be able to calculate them.
     return grid[this.state.index]
   }
 
   getXYMessage = (grid) => {
-    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
-    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
-    // returns the fully constructed string.
-
-    //bottom three
+    //bottom three 1
     if (this.state.index === 6) {
-      return (`(${(this.state.grid[0])})`)
-
+      return (`(${(this.state.grid[6])})`)
     } else if (this.state.index === 7) {
-      return (`(${(this.state.grid[1])})`)
-
+      return (`(${(this.state.grid[7])})`)
     } else if (this.state.index === 8) {
-      return (`(${(this.state.grid[2])})`)
+      return (`(${(this.state.grid[8])})`)
     }
+
     //middle three
     else if (this.state.index === 3) {
       return (`(${(this.state.grid[3])})`)
-
     } else if (this.state.index === 4) {
       return (`(${(this.state.grid[4])})`)
-
     } else if (this.state.index === 5) {
       return (`(${(this.state.grid[5])})`)
     }
+
     //top three
     else if (this.state.index === 0) {
-      return (`(${(this.state.grid[6])})`)
+      return (`(${(this.state.grid[0])})`)
     } else if (this.state.index === 1) {
-      return (`(${(this.state.grid[7])})`)
+      return (`(${(this.state.grid[1])})`)
     } else if (this.state.index === 2) {
-      return (`(${(this.state.grid[8])})`)
+      return (`(${(this.state.grid[2])})`)
     }
   }
 
-
-
-
   reset = () => {
-    // Use this helper to reset all states to their initial values.
     console.log('reset button clicked')
     this.setState({
       ...this.state,
@@ -97,9 +80,6 @@ export default class AppClass extends React.Component {
   }
 
   getNextIndex = (direction) => {
-    // This helper takes a direction ("left", "up", etc) and calculates what the next index
-    // of the "B" would be. If the move is impossible because we are at the edge of the grid,
-    // this helper should return the current index unchanged.
     if (direction === 'up' && this.state.index !== 0 && this.state.index !== 1 && this.state.index !== 2) {
       this.setState({
         ...this.state,
@@ -124,19 +104,18 @@ export default class AppClass extends React.Component {
         index: this.state.index + 1,
         steps: this.state.steps + 1
       })
-    }
+    } else this.setState({ ...this.state, message: (`You can't go ${direction}`) })
   }
 
   onChange = (evt) => {
-    // You will need this to update the value of the input.
     this.setState({
       ...this.state,
       email: evt.target.value
     })
+    return email
   }
 
   onSubmit = (event) => {
-    // Use a POST request to send a payload to the server.
     event.preventDefault()
     const motherLoad = {
       "x": this.getXY(this.state.grid)[0],
@@ -144,32 +123,28 @@ export default class AppClass extends React.Component {
       "steps": this.state.steps,
       "email": this.state.email
     }
-    // axios.post('http://localhost:9000/api/result', motherLoad)
-    //   .then(response => {
-    //     console.log(response.data);
-    //   }).catch(error => {
-    //     console.error(error);
-    //   });
+
     axios.post('http://localhost:9000/api/result', motherLoad)
       .then(response => {
         this.setState({ ...this.state, message: response.data.message });
         console.log(this.state.message)
       }).catch(error => {
-        console.error(error);
+        this.setState({ ...this.state, message: error.response.data.message })
       });
+    this.reset()
   }
 
 
 
   render() {
-    // console.log('render ran')
-    // console.log(this.state)
+    // console.log(this.state.grid)
+    // console.log(this.state.index)
     const { className } = this.props
     return (
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">Coordinates {this.getXYMessage(this.state.grid)}</h3>
-          <h3 id="steps">You moved {this.state.steps} times</h3>
+          <h3 id="steps">You moved {this.state.steps} time{(this.state.steps === 1 ? null : 's')}</h3>
         </div>
         <div id="grid">
           {
@@ -191,7 +166,7 @@ export default class AppClass extends React.Component {
           <button id="reset" onClick={this.reset}>reset</button>
         </div>
         <form>
-          <input onChange={this.onChange} id="email" type="email" placeholder="type email"></input>
+          <input onChange={this.onChange} value={this.state.email} id="email" type="email" placeholder="type email"></input>
           <input id="submit" type="submit" onClick={this.onSubmit}></input>
         </form>
       </div>
